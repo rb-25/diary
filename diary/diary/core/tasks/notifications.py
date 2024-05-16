@@ -11,6 +11,7 @@ from diary.core.models import Entry
 cred = credentials.Certificate("/app/credentials/firebase-key.json")
 firebase_app = firebase_admin.initialize_app(cred)
 
+#for scheduled notification
 @app.task(name="schedule_daily_notifications")
 @app.schedule(run_at_time='08:00:00', schedule=crontab(minute='0', hour='8'))  # Adjust time as needed
 def schedule_daily_notifications():
@@ -22,3 +23,12 @@ def schedule_daily_notifications():
         body = "You haven't written your diary entry for today. Take a moment to reflect on your day."
         topic = f"user_{user.id}"
         send_notification.delay(title, body, topic)
+
+#for manual notification
+@app.task(name="send_notification")
+def send_notification(title, body, topic):
+    message = messaging.Message(
+        notification=messaging.Notification(title=title, body=body),
+        topic=topic,
+    )
+    messaging.send(message)

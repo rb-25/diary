@@ -10,6 +10,8 @@ from diary.core.serializers import (
     EntryDetailSerializer,
 )
 
+from diary.core.tasks.notifications import send_notification
+
 class EntryViewSet (ModelViewSet):
     
     """CRUD for a diary entry"""
@@ -21,3 +23,4 @@ class EntryViewSet (ModelViewSet):
         if self.action == "list":
             return EntryListSerializer
         return EntryDetailSerializer
+
